@@ -2,24 +2,29 @@
 
 # run this on Linux or Mac are both fine.
 
-echo "help: ensure you are running this script in the same directory as src, eg. chromium/src, should run in chromium/"
-echo "help: running this: sh pack_cronet.sh debug|release linux|mac"
+echo insure you are running this script in the same directory as src, 
+echo   eg. chromium/
+echo running this command: 
+echo 
+echo  "sh pack_cronet.sh out/XXX  linux|mac"
+echo 
 
 function check_if_file_exist(){
 	if [[ ! -f $1 ]]; then
-		echo file: $1 not exist!
-		exit 1
+	    echo file: $1 not exist!
+	    rm -rf $target_dir
+	    exit 1
 	fi	
 }
 
 tar_on_linux(){
-        libroot=src/out/${outdir}
-        jarroot=$libroot/lib.java/components/cronet/android
+    libroot=src/out/${outdir}
+    jarroot=$libroot/lib.java/components/cronet/android
 	headerroot=src/components/cronet/android/
 
-	libcronet=$libroot/libcronet.77.0.3825.0.so
-        cronet_api=$jarroot/cronet_api_java.jar
-        cronet_api_interface=$jarroot/cronet_api_java.interface.jar
+	libcronet=$libroot/libcronet.75.0.3770.100.so
+    cronet_api=$jarroot/cronet_api_java.jar
+    cronet_api_interface=$jarroot/cronet_api_java.interface.jar
   	cronet_impl_platform_base=$jarroot/cronet_impl_platform_base_java.jar
 	cronet_impl_common_base=$jarroot/cronet_impl_common_base_java.jar
 	cronet_impl_platform_base_interface=$jarroot/cronet_impl_platform_base_java.interface.jar
@@ -97,25 +102,22 @@ tar_on_mac(){
 # check if params is valid
 
 
-outdir=Debug
-if [[ $1 == "debug"  ]]; then
-	echo you select debug as complie mode
-	outdir=Debug
-elif [[ $1 == "release" ]]; then
-	echo you select release as complie mode
-	outdir=Release
+outdir=$1
+if [[ -d src/out/$out_dir ]]; then
+	echo you set source directory as src/out/$outdir 
 else
-	echo error: unknown compile mode, select debug or release!
+	echo error: check if directory "$1" exist 
+    exit
 fi
 
 if [[ $2 == "linux" ]]; then
 	echo you select linux as running platform
-	target_dir=Android_Cronet_${outdir}
+	target_dir=Android_Cronet_${out_dir}
 	mkdir $target_dir 
 	tar_on_linux
 elif [[ $2 == "mac" ]]; then
 	echo you select mac as running platform
-	target_dir=iOS_Cronet_${outdir}
+	target_dir=iOS_Cronet_${out_dir}
 	mkdir $target_dir 
 	tar_on_mac
 else
@@ -123,6 +125,6 @@ else
 fi
 
 echo packing...
-tar -zcf ${target_dir}.tgz $target_dir
+tar -jcf ${target_dir}.bz2 $target_dir
 rm -rf $target_dir
 echo done.
